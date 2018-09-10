@@ -10,21 +10,21 @@ import sys
 import os
 import os.path
 
-usernames = []
+username = []
 outFilename = ""
 
-def write2file(list: unameList, str: filepath) -> int:
-    ''' Write list of usernames to a txt file ''''
+def writeToFile(unameList, filepath):
+    ''' Write list of usernames to a txt file '''
     try:
-        with open(filepath, "w") as usernames:
-            for uname in usernames:
-                usernames.write(uname)
-    except:
-        print("Something went wrong while writing the output file.")
+        with open(os.path.expanduser(filepath), "a+") as usernames:
+            for uname in username:
+                usernames.write(uname+"\n")
+    except Exception as e:
+        print("Something went wrong while writing the output file.", e)
         return -2
     return 0
-       
-def createUnames(str: name) -> int:
+
+def createUnames(name):
     ''' create usernames from fullname '''
     
     fullname = name.lower().split()
@@ -48,6 +48,35 @@ def createUnames(str: name) -> int:
     username.append(lname+fname[0])
     username.append(lname+"."+fname[0])
     username.append(lname[0]+fname)
+    username.append(lname[0]+"."+fname)
+    
+    print(username)
+    return writeToFile(username, outFilename)
+     
+
+if(__name__ == "__main__"):
+    params = list(sys.argv)
+    
+    outFilename = input("Enter the path to outptut file:")
+    if(os.path.isfile(outFilename)):
+        print("File already exists... ")
+        print("Data will be appended")
+        
+    if(len(params) < 2):
+        raise ValueError("Insufficient paramters")
+    if(params[1] == "-f"):
+        filePath = params[2]
+        try:
+            with open(filePath, "r") as nameList:
+                name = nameList.readline()
+                createUnames(name)
+                username = []
+        except:
+            print("Something wrong with file at :", filePath)
+    else:
+        for nameIndex in range(1, len(params)):
+            createUnames(sys.argv[nameIndex])
+            username = []
     username.append(lname[0]+"."+fname)
     
     return writeToFile(username, outFilename)
